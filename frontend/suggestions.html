@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Planner — Suggestions</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="nav"></div>
+  <div class="container">
+    <h2>AI Suggestions</h2>
+    <p>Click the button to get suggestions based on your most recent task.</p>
+    <div style="margin-bottom:12px;">
+      <button class="btn" id="getSuggestion">Get Suggestion</button>
+    </div>
+    <div id="suggestionResult"></div>
+  </div>
+
+  <script src="js/scripts.js"></script>
+  <script>
+    // API_BASE is now expected to be available globally from scripts.js
+    document.getElementById('getSuggestion').addEventListener('click', async ()=>{
+      const token = localStorage.getItem('token') || '';
+      
+      // If scripts.js defines API_BASE, this line will now work correctly
+      const tasksRes = await fetch(API_BASE + '/tasks', { headers: { 'Authorization': 'Bearer ' + token } });
+      const { tasks } = await tasksRes.json();
+      if(!tasks || tasks.length === 0) return alert('No tasks available');
+      const last = tasks[tasks.length - 1];
+
+      // ... inside the 'getSuggestion' event listener
+const suggestionRes = await fetch('http://localhost:8000/api/suggest', { // <--- FIX: Use port 8000
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: last.title, topic: last.topic, deadline: last.deadline })
+});
+// ...
+      const json = await suggestionRes.json();
+      document.getElementById('suggestionResult').innerText = json.suggestion || 'No suggestion';
+    });
+  </script>
+</body>
+</html>

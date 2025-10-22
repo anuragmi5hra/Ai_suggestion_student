@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Planner — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="container" style="max-width:800px;">
+    <h2>My Tasks</h2>
+    <div class="form-row">
+      <input id="taskTitle" placeholder="Task title">
+      <input id="taskTopic" placeholder="Topic">
+      <input id="taskDeadline" type="date">
+    </div>
+    <div style="margin-bottom:12px;">
+      <button class="btn" id="addTask">Add Task</button>
+      <a class="btn" href="suggestions.html" id="viewSuggestions">View Suggestions</a>
+      <a class="btn" href="progress.html">View Progress</a>
+    </div>
+
+    <div id="taskList"></div>
+  </div>
+
+  <!-- Load shared JS (contains API_BASE) -->
+  <script src="js/scripts.js"></script>
+
+  <!-- Page-specific JS -->
+  <script>
+    // use API_BASE defined in scripts.js
+    async function loadTasks() {
+      const token = localStorage.getItem('token') || '';
+      const res = await fetch(API_BASE + '/tasks', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      const list = document.getElementById('taskList');
+      list.innerHTML = '';
+      (data.tasks || []).forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'task-item';
+        div.innerHTML = `<strong>${t.title}</strong> — ${t.topic}<br>Deadline: ${new Date(t.deadline).toLocaleDateString()}`;
+        list.appendChild(div);
+      });
+    }
+
+    document.getElementById('addTask').addEventListener('click', async () => {
+      const title = document.getElementById('taskTitle').value;
+      const topic = document.getElementById('taskTopic').value;
+      const deadline = document.getElementById('taskDeadline').value;
+      const token = localStorage.getItem('token') || '';
+      const res = await fetch(API_BASE + '/tasks/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ title, topic, deadline })
+      });
+      const data = await res.json();
+      if (data.success) {
+        loadTasks();
+      } else {
+        alert(data.message || 'Could not add');
+      }
+    });
+
+    // Initial load
+    loadTasks();
+  </script>
+</body>
+</html>
