@@ -18,12 +18,11 @@ async function getJSON(url){
 function navHtml(){
   return `
   <div class="nav">
-    <div class="brand">StudyPlanner</div>
+    <div class="brand">Study📖Planner</div>
     <div class="links">
       <a href="index.html">Home</a>
       <a href="#about">About</a>
       <a href="#features">Features</a>
-      <a href="#contact">Contact</a>
     </div>
   </div>`;
 }
