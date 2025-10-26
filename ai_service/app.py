@@ -48,7 +48,7 @@ def suggest():
             study_chunks = min(7, days_left)
             hours_per_day = max(1, round(days_left / study_chunks))
             
-            suggestion += f"Break material into {study_chunks} chunks and study {hours_per_day} hour(s) per day.\n"
+            suggestion += f"Break material into {study_chunks} part and study {hours_per_day} hour(s) per day.\n"
         
         suggestion += "Prioritize active recall and spaced repetition.\n" 
         return jsonify({ 'suggestion': suggestion })

@@ -34,4 +34,48 @@ router.post('/add', async (req, res)=>{
   }catch(e){ console.error(e); res.status(500).json({ message: 'Server error' }); }
 });
 
+// +10% Progress
+router.patch('/:id/progress', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const task = await Task.findById(id);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    task.progress = Math.min(100, (task.progress || 0) + 10);
+    await task.save();
+
+    res.json({ success: true, task });
+  } catch (e) {
+    console.error('🔥 Error in /:id/progress:', e);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Mark as done (100%)
+router.patch('/:id/done', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const task = await Task.findById(id);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    task.progress = 100;
+    await task.save();
+
+    res.json({ success: true, task });
+  } catch (e) {
+    console.error('🔥 Error in /:id/done:', e);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const task = await Task.findByIdAndDelete(req.params.id);
+    if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+    res.json({ success: true, message: 'Task deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;

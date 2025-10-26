@@ -4,66 +4,89 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Study Planner — Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="nav"></div>
+
+   <div class="book-emoji">📖</div>
+<div class="pen-emoji">✏️</div>
+
   <div class="container">
     <h2>Progress</h2>
     <div id="progressList"></div>
   </div>
-
   <script src="js/scripts.js"></script>
   <script>
-    async function loadProgress(){
-      const token = localStorage.getItem('token') || '';
-      const res = await fetch(API_BASE + '/tasks', { headers: { 'Authorization': 'Bearer ' + token } });
-      const { tasks } = await res.json();
-      const out = document.getElementById('progressList');
-      out.innerHTML = '';
-      const today = new Date();
-      (tasks || []).forEach(t=>{
-        const start = new Date();
-        const deadline = new Date(t.deadline);
-        const totalDays = Math.max(1, Math.ceil((deadline - start)/(1000*60*60*24)));
-        const daysLeft = Math.max(0, Math.ceil((deadline - today)/(1000*60*60*24)));
-        const pct = Math.max(0, Math.min(100, Math.round(((totalDays - daysLeft)/totalDays) * 100)));
+    // use API_BASE defined in scripts.js
+async function updateProgress(id) {
+  const token = localStorage.getItem('token') || '';
+  const res = await fetch(API_BASE + '/tasks/' + id + '/progress', {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const data = await res.json();
+  if (data.success) loadProgress();
+}
 
+async function markDone(id) {
+  const token = localStorage.getItem('token') || '';
+  const res = await fetch(API_BASE + '/tasks/' + id + '/done', {
+    method: 'PATCH',
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const data = await res.json();
+  if (data.success) loadProgress();
+}
+    </script>
+
+  <script>
+    // use API_BASE defined in scripts.js
+    async function loadProgress() {
+      const token = localStorage.getItem('token') || '';
+      const res = await fetch(API_BASE + '/tasks', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      const list = document.getElementById('progressList');
+      list.innerHTML = '';
+      (data.tasks || []).forEach(t => {
         const div = document.createElement('div');
         div.className = 'task-item';
-        div.innerHTML = `<strong>${t.title}</strong> — ${t.topic}<br>
-          Deadline: ${deadline.toLocaleDateString()}<br>
-          <div class="progress"><span style="width:${pct}%"></span></div>
-          <small>${pct}% complete</small>`;
-        out.appendChild(div);
+        div.innerHTML = `
+          <strong>${t.title}</strong> — ${t.topic}<br>
+          Deadline: ${new Date(t.deadline).toLocaleDateString()}<br>
+          Progress: ${t.progress || 0}% 
+          <button class="btn-small" onclick="updateProgress('${t._id}')">+10%</button>
+          <button class="btn-small" onclick="markDone('${t._id}')">Mark as Done✅</button>
+        `;
+        list.appendChild(div);
       });
     }
-    loadProgress();
+
+    window.addEventListener('load', loadProgress);
   </script>
 
- <!-- Footer -->
+<!-- Footer -->
 <footer class="footer">
-    <div class="footer-container">
-        <p>&copy; 2025 To-Do List App. All Rights Reserved.</p>
-        <p>
-            Made with ❤️ by <strong>Anurag</strong> | 
-             <p><a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" 
-       alt="LinkedIn" 
-       style="width:28px; height:20px; filter: invert(48%) sepia(98%) saturate(2409%) hue-rotate(176deg) brightness(95%) contrast(92%);">
-       <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" 
-       alt="Instagram" 
-       style="width:28px; height:20px; filter: invert(36%) sepia(75%) saturate(4000%) hue-rotate(314deg) brightness(95%) contrast(101%);">
-</a>
-<a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" 
-       alt="Twitter (X)" 
-       style="width:28px; height:20px; filter: invert(100%);">
-</a>
-</p>
-        </p>
+  <div class="footer-container">
+    <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
+    <p>Made with ❤️ by <strong>Anurag</strong></p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn">
+      </a>
+      <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
+      </a>
+      <a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter (X)">
+      </a>
     </div>
+  </div>
 </footer>
 </body>
 </html>

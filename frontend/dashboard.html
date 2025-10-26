@@ -4,10 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Study Planner — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="nav"></div>
+
+   <div class="book-emoji">📖</div>
+<div class="pen-emoji">✏️</div>
 
   <div class="container" style="max-width:800px;">
     <h2>My Tasks</h2>
@@ -25,33 +31,70 @@
     <div id="taskList"></div>
   </div>
 
-  <!-- Load shared JS (contains API_BASE) -->
-  <script src="js/scripts.js"></script>
+  <!-- <script>
+  window.addEventListener('load', () => {
+    localStorage.clear();  // Clears token and any saved data
+    sessionStorage.clear(); // Clears session storage too (optional)
+  });
+</script> -->
 
-  <!-- Page-specific JS -->
-  <script>
-    // use API_BASE defined in scripts.js
-    async function loadTasks() {
-      const token = localStorage.getItem('token') || '';
-      const res = await fetch(API_BASE + '/tasks', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      const data = await res.json();
-      const list = document.getElementById('taskList');
-      list.innerHTML = '';
-      (data.tasks || []).forEach(t => {
-        const div = document.createElement('div');
-        div.className = 'task-item';
-        div.innerHTML = `<strong>${t.title}</strong> — ${t.topic}<br>Deadline: ${new Date(t.deadline).toLocaleDateString()}`;
-        list.appendChild(div);
-      });
-    }
 
-    document.getElementById('addTask').addEventListener('click', async () => {
-      const title = document.getElementById('taskTitle').value;
-      const topic = document.getElementById('taskTopic').value;
-      const deadline = document.getElementById('taskDeadline').value;
-      const token = localStorage.getItem('token') || '';
+ <script src="js/scripts.js"></script>
+<script>
+  // Load tasks from backend
+  async function loadTasks() {
+    const token = localStorage.getItem('token') || '';
+    const res = await fetch(API_BASE + '/tasks', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+
+    const list = document.getElementById('taskList');
+    list.innerHTML = '';
+
+    (data.tasks || []).forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'task-item';
+      div.innerHTML = `
+        <strong>${t.title}</strong> — ${t.topic}<br>
+        Deadline: ${new Date(t.deadline).toLocaleDateString()}<br>
+      `;
+
+      // Create Delete button
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-small';
+      delBtn.textContent = 'Delete ❌';
+      delBtn.addEventListener('click', async () => {
+        try {
+          const resDel = await fetch(API_BASE + '/tasks/' + t._id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const delData = await resDel.json();
+          if (delData.success) {
+            loadTasks(); // Refresh list
+          } else {
+            alert(delData.message || 'Failed to delete task');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error deleting task');
+        }
+      });
+
+      div.appendChild(delBtn);
+      list.appendChild(div);
+    });
+  }
+
+  // Add new task
+  document.getElementById('addTask').addEventListener('click', async () => {
+    const title = document.getElementById('taskTitle').value;
+    const topic = document.getElementById('taskTopic').value;
+    const deadline = document.getElementById('taskDeadline').value;
+    const token = localStorage.getItem('token') || '';
+
+    try {
       const res = await fetch(API_BASE + '/tasks/add', {
         method: 'POST',
         headers: {
@@ -60,41 +103,41 @@
         },
         body: JSON.stringify({ title, topic, deadline })
       });
+
       const data = await res.json();
       if (data.success) {
-        loadTasks();
+        loadTasks(); // Refresh list
       } else {
-        alert(data.message || 'Could not add');
+        alert(data.message || 'Could not add task');
       }
-    });
+    } catch (err) {
+      console.error(err);
+      alert('Error adding task');
+    }
+  });
 
-    // Initial load
-    loadTasks();
-  </script>
+  // Initial load
+  window.addEventListener('load', loadTasks);
+</script>
 
- <!-- Footer -->
+
+<!-- Footer -->
 <footer class="footer">
-    <div class="footer-container">
-        <p>&copy; 2025 To-Do List App. All Rights Reserved.</p>
-        <p>
-            Made with ❤️ by <strong>Anurag</strong> | 
-             <p><a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" 
-       alt="LinkedIn" 
-       style="width:28px; height:20px; filter: invert(48%) sepia(98%) saturate(2409%) hue-rotate(176deg) brightness(95%) contrast(92%);">
-       <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" 
-       alt="Instagram" 
-       style="width:28px; height:20px; filter: invert(36%) sepia(75%) saturate(4000%) hue-rotate(314deg) brightness(95%) contrast(101%);">
-</a>
-<a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" 
-       alt="Twitter (X)" 
-       style="width:28px; height:20px; filter: invert(100%);">
-</a>
-</p>
-        </p>
+  <div class="footer-container">
+    <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
+    <p>Made with ❤️ by <strong>Anurag</strong></p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn">
+      </a>
+      <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
+      </a>
+      <a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter (X)">
+      </a>
     </div>
+  </div>
 </footer>
 </body>
 </html>

@@ -18,7 +18,11 @@ async function getJSON(url){
 function navHtml(){
   return `
   <div class="nav">
-    <div class="brand">Study📖Planner</div>
+    <div class="logo">
+  <span class="logo-icon">📘</span>
+  <span class="logo-text">Study<span class="highlight">Planner</span></span>
+</div>
+
     <div class="links">
       <a href="index.html">Home</a>
       <a href="#about">About</a>

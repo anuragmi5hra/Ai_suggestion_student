@@ -4,10 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Study Planner — Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="nav"></div>
+
+
+  <div class="book-emoji">📖</div>
+<div class="pen-emoji">✏️</div>
+
+<script>
+  window.addEventListener("load", () => {
+    document.querySelector(".book-emoji").style.animationPlayState = "running";
+    document.querySelector(".pen-emoji").style.animationPlayState = "running";
+  });
+</script>
+
+
+
 
   <div class="container center">
     <h1>Welcome to StudyPlanner</h1>
@@ -34,29 +51,23 @@
     </ul>
   </div>
 
- <!-- Footer -->
+<!-- Footer -->
 <footer class="footer">
-    <div class="footer-container">
-        <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
-        <p>
-            Made with ❤️ by <strong>Anurag</strong> | 
-             <p><a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" 
-       alt="LinkedIn" 
-       style="width:28px; height:20px; filter: invert(48%) sepia(98%) saturate(2409%) hue-rotate(176deg) brightness(95%) contrast(92%);">
-       <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" 
-       alt="Instagram" 
-       style="width:28px; height:20px; filter: invert(36%) sepia(75%) saturate(4000%) hue-rotate(314deg) brightness(95%) contrast(101%);">
-</a>
-<a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter">
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" 
-       alt="Twitter (X)" 
-       style="width:28px; height:20px; filter: invert(100%);">
-</a>
-</p>
-        </p>
+  <div class="footer-container">
+    <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
+    <p>Made with ❤️ by <strong>Anurag</strong></p>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn">
+      </a>
+      <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
+      </a>
+      <a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter" class="social-icon">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter (X)">
+      </a>
     </div>
+  </div>
 </footer>
 
  <script src="js/scripts.js"></script>
