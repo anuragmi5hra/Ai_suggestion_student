@@ -1,5 +1,5 @@
 // Shared helper functions for frontend pages
-const API_BASE = 'https://ai-suggestion-student.onrender.com/';
+const API_BASE = 'http://localhost:5000/api';
 
 async function postJSON(url, data){
   const res = await fetch(url, {

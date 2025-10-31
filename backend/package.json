@@ -1,9 +1,11 @@
 {
-  "name": "study-planner-backend",
+  "name": "smart-study-planner",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "AI-based Smart Study Planner backend deployment setup for Render",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node backend/server.js",
+    "build": "cd backend && npm install"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
