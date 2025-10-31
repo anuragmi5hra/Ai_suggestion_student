@@ -6,7 +6,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://ai-suggestion-student-frontend.onrender.com',
+    'http://localhost:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
