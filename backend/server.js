@@ -6,14 +6,26 @@ const dotenv = require('dotenv');
 dotenv.config();
 const app = express();
 
+const allowedOrigins = [
+  'https://ai-suggestion-student-frontend.onrender.com', // your Render frontend
+  'http://localhost:3000', // local dev
+  'http://127.0.0.1:3000' // local dev (your case)
+];
+
 app.use(cors({
-  origin: [
-    'https://ai-suggestion-student-frontend.onrender.com',
-    'http://localhost:3000'
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('CORS not allowed for this origin: ' + origin), false);
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true
 }));
+
 
 app.use(express.json());
 
