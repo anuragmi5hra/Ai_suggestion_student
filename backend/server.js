@@ -38,6 +38,7 @@ mongoose.connect(MONGO)
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tasks', require('./routes/tasks'));
+app.use('/api/suggest', require('./routes/suggest'));
 
 // ✅ Add this route to handle Render root URL
 app.get('/', (req, res) => {
