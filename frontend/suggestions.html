@@ -37,7 +37,7 @@
       const last = tasks[tasks.length - 1];
 
       // ... inside the 'getSuggestion' event listener
-const suggestionRes = await fetch('http://localhost:8000/api/suggest', { // <--- FIX: Use port 8000
+const suggestionRes = await fetch("https://ai-suggestion-student.onrender.com/api/suggest", {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ title: last.title, topic: last.topic, deadline: last.deadline })
 });
