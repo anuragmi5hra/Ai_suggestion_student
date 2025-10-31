@@ -1,27 +1,29 @@
 // backend/routes/suggest.js
-const express = require('express');
+const express = require("express");
+const axios = require("axios");
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { title, topic, deadline } = req.body;
 
-    if (!title && !topic) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
+    // ✅ Forward the request to the Python backend
+    const response = await axios.post(
+      "https://your-python-app-url.onrender.com/api/suggest", // 🟢 replace this with your actual deployed Python URL
+      { title, topic, deadline }
+    );
 
-    // Simple example — replace this with your actual AI logic later
-    const suggestion = `
-      Based on your task "${title || topic}", here’s a helpful suggestion:
-      - Break it into smaller sub-tasks.
-      - Focus for 25-minute Pomodoro sessions.
-      - Try finishing before ${deadline || 'the due date'}.
-    `;
+    // ✅ Send Python response to the frontend
+    res.json({ success: true, suggestion: response.data.suggestion });
+  } catch (error) {
+    console.error("Error communicating with Python API:", error.message);
 
-    res.json({ success: true, suggestion });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Server error' });
+    // Handle if Python backend returns an error or is unreachable
+    res.status(500).json({
+      success: false,
+      message: "Failed to get suggestion from Python backend",
+      details: error.message,
+    });
   }
 });
 
