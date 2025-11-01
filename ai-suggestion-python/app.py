@@ -59,6 +59,9 @@ def suggest():
         # Return a JSON error response instead of an HTML 500 page
         return jsonify({'error': 'Internal Server Error during suggestion generation'}), 500
 
-if __name__ == '__main__':
-    # Setting use_reloader=False prevents the app from running twice if it's imported
-    app.run(port=8000, debug=False, use_reloader=False)
+import os
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
+
