@@ -2,6 +2,5 @@ services:
   - type: web
     name: ai-suggestion-python
     env: python
-    rootDir: ai-suggestion-python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app --chdir ai-suggestion-python"
+    buildCommand: "pip install -r ai-suggestion-python/requirements.txt"
+    startCommand: "gunicorn ai-suggestion-python.app:app"
