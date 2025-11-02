@@ -59,6 +59,11 @@ def suggest():
         # Return a JSON error response instead of an HTML 500 page
         return jsonify({'error': 'Internal Server Error during suggestion generation'}), 500
 
+        @app.route('/')
+        def home():
+        return "✅ AI Suggestion API is running successfully on Render!"
+
+
 import os
 
 if __name__ == "__main__":
