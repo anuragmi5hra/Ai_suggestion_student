@@ -12,11 +12,7 @@ app = Flask(__name__)
 
 # ✅ Allow both localhost (for dev) and your Render frontend
 CORS(app, resources={r"/*": {
-    "origins": [
-        "http://127.0.0.1:3000",
-        "http://localhost:3000",
-        "https://ai-suggestion-student-frontend.onrender.com"
-    ]
+    "origins": "*"
 }}, supports_credentials=True)
 
 # Register route blueprints
