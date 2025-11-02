@@ -61,7 +61,8 @@ def suggest():
 
         @app.route('/')
         def home():
-        return "✅ AI Suggestion API is running successfully on Render!"
+    return "✅ AI Suggestion API is running successfully on Render!"
+
 
 
 import os
