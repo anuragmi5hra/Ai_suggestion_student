@@ -1,8 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import logging, os
-
-# Import route blueprints
 from auth_routes import auth_bp
 from task_routes import task_bp
 from suggestion_routes import suggest_bp
@@ -10,20 +8,18 @@ from suggestion_routes import suggest_bp
 logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 
-# ✅ Allow both localhost (for dev) and your Render frontend
-CORS(app, resources={r"/*": {
-    "origins": "*"
-}}, supports_credentials=True)
+# ✅ Allow localhost (for testing) + Render frontend
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-# Register route blueprints
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(task_bp, url_prefix="/api/tasks")
 app.register_blueprint(suggest_bp, url_prefix="/api")
 
 @app.after_request
 def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH')
     return response
 
 @app.route('/')
