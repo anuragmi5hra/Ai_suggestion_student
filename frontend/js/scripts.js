@@ -1,5 +1,5 @@
 // Shared helper functions for frontend pages
-const API_BASE = "https://ai-suggestion-student.onrender.com/api";
+const API_BASE = "https://ai-suggestion-student-3.onrender.com/api";
 
 async function postJSON(url, data){
   const res = await fetch(url, {
