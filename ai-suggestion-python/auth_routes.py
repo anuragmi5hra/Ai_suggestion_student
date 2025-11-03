@@ -1,8 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
+from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_bp = Blueprint('auth_bp', __name__)
-
-USERS = {}  # In-memory user store (replace with database later)
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -13,10 +12,14 @@ def signup():
     if not email or not password:
         return jsonify({'success': False, 'message': 'Email and password required'}), 400
 
-    if email in USERS:
+    db = current_app.config["db"]
+    users = db.users
+
+    if users.find_one({'email': email}):
         return jsonify({'success': False, 'message': 'User already exists'}), 400
 
-    USERS[email] = password
+    hashed_pw = generate_password_hash(password)
+    users.insert_one({'email': email, 'password': hashed_pw})
     return jsonify({'success': True, 'message': 'Signup successful!'})
 
 @auth_bp.route('/login', methods=['POST'])
@@ -25,6 +28,11 @@ def login():
     email = data.get('email')
     password = data.get('password')
 
-    if USERS.get(email) == password:
+    db = current_app.config["db"]
+    users = db.users
+
+    user = users.find_one({'email': email})
+    if user and check_password_hash(user['password'], password):
         return jsonify({'success': True, 'token': 'dummy-token', 'message': 'Login successful'})
+    
     return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
