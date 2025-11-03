@@ -12,8 +12,8 @@
 <body>
   <div id="nav"></div>
 
-   <div class="book-emoji">📖</div>
-<div class="pen-emoji">✏️</div>
+  <div class="book-emoji">📖</div>
+  <div class="pen-emoji">✏️</div>
 
   <div class="container" style="max-width:420px; margin-top: 130px;">
     <h2 class="center">Login / Signup</h2>
@@ -34,68 +34,83 @@
     </form>
     <p class="center" style="margin-top:12px;"><a href="dashboard.html">Continue as Guest</a></p>
   </div>
-  <script src="js/config.js"></script>
-  <script src="js/scripts.js"></script>
+
   <script>
-  
+    // ✅ Backend Base URL (your Flask Render API)
+    const API_BASE = "https://ai-suggestion-student-3.onrender.com";
 
-  async function postJSON(url, data) {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+    // Helper to send JSON requests
+    async function postJSON(url, data) {
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        return await res.json();
+      } catch (err) {
+        console.error("Network Error:", err);
+        alert("Server not reachable. Please try again later.");
+      }
+    }
+
+    // 🟢 LOGIN
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) return alert("Please fill all fields!");
+
+      const res = await postJSON(`${API_BASE}/login`, { email, password });
+      console.log("Login Response:", res);
+
+      if (res.message === "Login successful") {
+        localStorage.setItem("username", res.name);
+        alert("Welcome back, " + res.name + "!");
+        location.href = "dashboard.html";
+      } else {
+        alert(res.error || "Invalid credentials");
+      }
     });
-    return res.json();
-  }
 
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    console.log("Sending to backend:", { email, password }); // ✅ debug
+    // 🟣 SIGNUP
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-    const res = await postJSON(API_BASE + '/auth/login', { email, password });
-    console.log("Response:", res);
+      if (!name || !email || !password) return alert("Please fill all fields!");
 
-    if (res.token) {
-      localStorage.setItem('token', res.token);
-      location.href = 'dashboard.html';
-    } else {
-      alert(res.message || 'Login failed');
-    }
-  });
+      const res = await postJSON(`${API_BASE}/signup`, { name, email, password });
+      console.log("Signup Response:", res);
 
-  document.getElementById('signupBtn').addEventListener('click', async () => {
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-
-    const res = await postJSON(API_BASE + '/auth/signup', { name, email, password });
-    if (res.token) {
-      localStorage.setItem('token', res.token);
-      location.href = 'dashboard.html';
-    } else {
-      alert(res.message || 'Signup failed');
-    }
-  });
+      if (res.message === "Signup successful") {
+        localStorage.setItem("username", name);
+        alert("Signup successful! Welcome, " + name + "!");
+        location.href = "dashboard.html";
+      } else {
+        alert(res.error || "Signup failed");
+      }
+    });
   </script>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-container">
-    <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
-    <p>Made with ❤️ by <strong>Anurag</strong></p>
-    <div class="footer-links">
-      <a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn" class="social-icon">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn">
-      </a>
-      <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram" class="social-icon">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
-      </a>
-      <a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter" class="social-icon">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter (X)">
-      </a>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
+      <p>Made with ❤️ by <strong>Anurag</strong></p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn" class="social-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn">
+        </a>
+        <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram" class="social-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
+        </a>
+        <a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter" class="social-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter (X)">
+        </a>
+      </div>
     </div>
-  </div>
-</footer>
+  </footer>
 </body>
 </html>
