@@ -1,1 +1,2 @@
-const API_BASE = "http://127.0.0.1:8000/api";
+const API_BASE = "https://ai-suggestion-student-3.onrender.com/api";
+
