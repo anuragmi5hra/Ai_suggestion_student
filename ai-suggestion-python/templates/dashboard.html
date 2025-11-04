@@ -31,8 +31,9 @@
     </div>
     <div style="margin-bottom:12px;">
       <button class="btn" id="addTask">Add Task</button>
-      <a class="btn" href="suggestions.html" id="viewSuggestions">View Suggestions</a>
-      <a class="btn" href="progress.html">View Progress</a>
+      <a href="{{ url_for('suggestions') }}">View Suggestions</a>
+      <a href="{{ url_for('progress') }}">View Progress</a>
+
     </div>
 
     <div id="taskList"></div>
