@@ -2,76 +2,53 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Study Planner — Progress</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Study Progress Tracker</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="nav"></div>
+  <nav>
+    <h3>📘 Study Planner</h3>
+    <div>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="suggestions.html">Suggestions</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </div>
+  </nav>
 
-   <div class="book-emoji">📖</div>
-<div class="pen-emoji">✏️</div>
-
-  <div class="container">
-    <h2>Progress</h2>
-    <div id="progressList"></div>
-  </div>
-  <script src="js/config.js"></script>
-  <script src="js/scripts.js"></script>
-  <script>
-    // use API_BASE defined in scripts.js
-async function updateProgress(id) {
-  const token = localStorage.getItem('token') || '';
-  const res = await fetch(API_BASE + '/tasks/' + id + '/progress', {
-    method: 'PATCH',
-    headers: { 'Authorization': 'Bearer ' + token }
-  });
-  const data = await res.json();
-  if (data.success) loadProgress();
-}
-
-async function markDone(id) {
-  const token = localStorage.getItem('token') || '';
-  const res = await fetch(API_BASE + '/tasks/' + id + '/done', {
-    method: 'PATCH',
-    headers: { 'Authorization': 'Bearer ' + token }
-  });
-  const data = await res.json();
-  if (data.success) loadProgress();
-}
-    </script>
+  <main>
+    <h2>Track Your Progress 📈</h2>
+    <p>Mark topics as done and see your completion rate!</p>
+    <ul id="progressList"></ul>
+    <p id="completionRate"></p>
+  </main>
 
   <script>
-    // use API_BASE defined in scripts.js
-    async function loadProgress() {
-      const token = localStorage.getItem('token') || '';
-      const res = await fetch(API_BASE + '/tasks', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      const data = await res.json();
-      const list = document.getElementById('progressList');
-      list.innerHTML = '';
-      (data.tasks || []).forEach(t => {
-        const div = document.createElement('div');
-        div.className = 'task-item';
-        div.innerHTML = `
-          <strong>${t.title}</strong> — ${t.topic}<br>
-          Deadline: ${new Date(t.deadline).toLocaleDateString()}<br>
-          Progress: ${t.progress || 0}% 
-          <button class="btn-small" onclick="updateProgress('${t._id}')">+10%</button>
-          <button class="btn-small" onclick="markDone('${t._id}')">Mark as Done✅</button>
-        `;
-        list.appendChild(div);
-      });
+    const topics = ["OS", "DBMS", "Networking", "DSA", "AI"];
+    const progressList = document.getElementById("progressList");
+
+    topics.forEach(topic => {
+      const li = document.createElement("li");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.onchange = updateProgress;
+      li.appendChild(checkbox);
+      li.appendChild(document.createTextNode(" " + topic));
+      progressList.appendChild(li);
+    });
+
+    function updateProgress() {
+      const total = topics.length;
+      const done = document.querySelectorAll("input[type='checkbox']:checked").length;
+      document.getElementById("completionRate").textContent = `✅ ${done}/${total} completed (${Math.round(done/total*100)}%)`;
     }
 
-    window.addEventListener('load', loadProgress);
+    document.getElementById("logoutBtn").onclick = () => {
+      localStorage.clear();
+      location.href = "login.html";
+    };
   </script>
 
-<!-- Footer -->
+  <!-- Footer -->
 <footer class="footer">
   <div class="footer-container">
     <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>

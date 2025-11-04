@@ -2,126 +2,52 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Study Planner — Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="nav"></div>
-
-   <div class="book-emoji">📖</div>
-<div class="pen-emoji">✏️</div>
-
-  <div class="container" style="max-width:800px;">
-    <h2>My Tasks</h2>
-    <div class="form-row">
-      <input id="taskTitle" placeholder="Task title">
-      <input id="taskTopic" placeholder="Topic">
-      <input id="taskDeadline" type="date">
+  <nav>
+    <h3>📘 Study Planner</h3>
+    <div>
+      <a href="suggestions.html">Suggestions</a>
+      <a href="progress.html">Progress</a>
+      <a href="#" id="logoutBtn">Logout</a>
     </div>
-    <div style="margin-bottom:12px;">
-      <button class="btn" id="addTask">Add Task</button>
-      <a class="btn" href="suggestions.html" id="viewSuggestions">View Suggestions</a>
-      <a class="btn" href="progress.html">View Progress</a>
+  </nav>
+
+  <main>
+    <h2>Welcome, <span id="username"></span> 👋</h2>
+
+    <div class="task-box">
+      <input type="text" id="taskInput" placeholder="Add your topic or task..." />
+      <button class="btn" id="addTaskBtn">Add Task</button>
     </div>
+    <ul id="taskList"></ul>
+  </main>
 
-    <div id="taskList"></div>
-  </div>
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    document.getElementById("username").innerText = user || "Guest";
 
-  <!-- <script>
-  window.addEventListener('load', () => {
-    localStorage.clear();  // Clears token and any saved data
-    sessionStorage.clear(); // Clears session storage too (optional)
-  });
-</script> -->
+    document.getElementById("logoutBtn").onclick = () => {
+      localStorage.clear();
+      location.href = "login.html";
+    };
 
- <script src="js/config.js"></script>
- <script src="js/scripts.js"></script>
-<script>
-  // Load tasks from backend
-  async function loadTasks() {
-    const token = localStorage.getItem('token') || '';
-    const res = await fetch(API_BASE + '/tasks', {
-      headers: { 'Authorization': 'Bearer ' + token }
+    const taskList = document.getElementById("taskList");
+    const taskInput = document.getElementById("taskInput");
+
+    document.getElementById("addTaskBtn").addEventListener("click", () => {
+      const text = taskInput.value.trim();
+      if (!text) return;
+      const li = document.createElement("li");
+      li.textContent = text;
+      taskList.appendChild(li);
+      taskInput.value = "";
     });
-    const data = await res.json();
+  </script>
 
-    const list = document.getElementById('taskList');
-    list.innerHTML = '';
-
-    (data.tasks || []).forEach(t => {
-      const div = document.createElement('div');
-      div.className = 'task-item';
-      div.innerHTML = `
-        <strong>${t.title}</strong> — ${t.topic}<br>
-        Deadline: ${new Date(t.deadline).toLocaleDateString()}<br>
-      `;
-
-      // Create Delete button
-      const delBtn = document.createElement('button');
-      delBtn.className = 'btn-small';
-      delBtn.textContent = 'Delete ❌';
-      delBtn.addEventListener('click', async () => {
-        try {
-          const resDel = await fetch(API_BASE + '/tasks/' + t._id, {
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-          const delData = await resDel.json();
-          if (delData.success) {
-            loadTasks(); // Refresh list
-          } else {
-            alert(delData.message || 'Failed to delete task');
-          }
-        } catch (err) {
-          console.error(err);
-          alert('Error deleting task');
-        }
-      });
-
-      div.appendChild(delBtn);
-      list.appendChild(div);
-    });
-  }
-
-  // Add new task
-  document.getElementById('addTask').addEventListener('click', async () => {
-    const title = document.getElementById('taskTitle').value;
-    const topic = document.getElementById('taskTopic').value;
-    const deadline = document.getElementById('taskDeadline').value;
-    const token = localStorage.getItem('token') || '';
-
-    try {
-      const res = await fetch(API_BASE + '/tasks/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({ title, topic, deadline })
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        loadTasks(); // Refresh list
-      } else {
-        alert(data.message || 'Could not add task');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error adding task');
-    }
-  });
-
-  // Initial load
-  window.addEventListener('load', loadTasks);
-</script>
-
-
-<!-- Footer -->
+  <!-- Footer -->
 <footer class="footer">
   <div class="footer-container">
     <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
