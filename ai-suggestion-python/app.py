@@ -1,50 +1,72 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 import os
-import logging
 
-# Import your route blueprints
-from auth_routes import auth_bp
-
-# ----------------------------------------
-# Flask App Setup
-# ----------------------------------------
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
-logging.basicConfig(level=logging.INFO)
+# MongoDB connection
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://anuragmishra20006_db_user:anurag9311@anurag.jboglen.mongodb.net/?appName=anurag")
 
-# ✅ Load MongoDB URI from environment or fallback
-MONGO_URI = os.environ.get(
-    "MONGO_URI",
-    "mongodb+srv://anuragmishra20006_db_user:anurag9311@anurag.jboglen.mongodb.net/?appName=anurag"
-)
-
-# ✅ Connect to MongoDB
 try:
     client = MongoClient(MONGO_URI)
     db = client["studyplanner"]
-    app.db = db  # Make DB accessible via `current_app.db`
-    logging.info("✅ MongoDB connected successfully!")
+    users = db["users"]
+    print("✅ MongoDB connected successfully!")
 except Exception as e:
-    logging.error(f"❌ MongoDB connection failed: {e}")
+    print("❌ MongoDB connection failed:", e)
 
-# ----------------------------------------
-# Register Blueprints
-# ----------------------------------------
-app.register_blueprint(auth_bp, url_prefix="/api/auth")
-
-# ----------------------------------------
-# Default Route
-# ----------------------------------------
+# -------------------- FRONTEND ROUTES --------------------
 @app.route("/")
 def home():
-    return jsonify({"message": "✅ Study Planner Flask API Running with MongoDB!"})
+    return render_template("index.html")
 
-# ----------------------------------------
-# Run the App
-# ----------------------------------------
+@app.route("/login")
+def login_page():
+    return render_template("login.html")
+
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+@app.route("/suggestions")
+def suggestions():
+    return render_template("suggestions.html")
+
+@app.route("/progress")
+def progress():
+    return render_template("progress.html")
+
+
+# -------------------- BACKEND ROUTES --------------------
+@app.route("/signup", methods=["POST"])
+def signup():
+    data = request.get_json()
+    name, email, password = data.get("name"), data.get("email"), data.get("password")
+
+    if not all([name, email, password]):
+        return jsonify({"message": "All fields required"}), 400
+
+    if db.users.find_one({"email": email}):
+        return jsonify({"message": "User already exists"}), 400
+
+    db.users.insert_one({"name": name, "email": email, "password": password})
+    return jsonify({"message": "Signup successful"}), 201
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    email, password = data.get("email"), data.get("password")
+
+    user = db.users.find_one({"email": email, "password": password})
+    if not user:
+        return jsonify({"message": "Invalid email or password"}), 401
+
+    return jsonify({"message": "Login successful", "name": user["name"]}), 200
+
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)

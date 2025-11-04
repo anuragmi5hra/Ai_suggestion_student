@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Planner — Suggestions</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- ✅ Navigation Bar -->
+  <nav class="navbar">
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('suggestions') }}" class="active">Suggestions</a>
+    <a href="{{ url_for('progress') }}">Progress</a>
+  </nav>
+
+  <!-- Emojis -->
+  <div class="book-emoji">📖</div>
+  <div class="pen-emoji">✏️</div>
+
+  <!-- Main Content -->
+  <div class="container" style="margin-top: 100px;">
+    <h2>AI Suggestions</h2>
+    <p>Click the button to get suggestions based on your most recent task.</p>
+
+    <div style="margin-bottom: 12px;">
+      <button class="btn" id="getSuggestion">Get Suggestion</button>
+    </div>
+
+    <div id="suggestionResult"></div>
+  </div>
+
+  <!-- JS Files -->
+  <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+  <!-- Page Script -->
+  <script>
+    document.getElementById('getSuggestion').addEventListener('click', async () => {
+      const token = localStorage.getItem('token') || '';
+
+      try {
+        const tasksRes = await fetch(API_BASE + '/tasks', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const { tasks } = await tasksRes.json();
+
+        if (!tasks || tasks.length === 0)
+          return alert('No tasks available');
+
+        const last = tasks[tasks.length - 1];
+
+        const suggestionRes = await fetch(`${API_BASE}/suggest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: last.title,
+            topic: last.topic,
+            deadline: last.deadline
+          })
+        });
+
+        const json = await suggestionRes.json();
+        document.getElementById('suggestionResult').innerText =
+          json.suggestion || 'No suggestion available.';
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Error fetching suggestion.');
+      }
+    });
+  </script>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <p>&copy; 2025 Study Planner App. All Rights Reserved.</p>
+      <p>Made with ❤️ by <strong>Anurag</strong></p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/anurag-mishra-20006/" target="_blank" title="LinkedIn" class="social-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" alt="LinkedIn">
+        </a>
+        <a href="https://www.instagram.com/__.anuragmishra/" target="_blank" title="Instagram" class="social-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
+        </a>
+        <a href="https://x.com/AnuragMish10174" target="_blank" title="Twitter" class="social-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter (X)">
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

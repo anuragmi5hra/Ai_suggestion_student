@@ -735,4 +735,33 @@ button[onclick*="markDone"]:hover {
   background-color: #15803d;
   transform: scale(1.05);
 }
+/* Navbar Styles */
+.navbar {
+  background: #222;
+  padding: 12px;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: #00c6ff;
+}
+
+.navbar a.active {
+  color: #00c6ff;
+  border-bottom: 2px solid #00c6ff;
+}
+
 
