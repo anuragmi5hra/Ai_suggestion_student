@@ -42,23 +42,24 @@ def progress():
     return render_template("progress.html")
 
 # -------------------- TASK ROUTES --------------------
-from bson import json_util  # <-- add this at top if not already
-
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     try:
         tasks_cursor = db.tasks.find()
-        task_list = list(tasks_cursor)
+        task_list = []
 
-        # Use bson.json_util to safely handle ObjectIds, datetimes, etc.
-        json_data = json_util.dumps({"tasks": task_list})
-        return app.response_class(json_data, mimetype='application/json')
+        for t in tasks_cursor:
+            t["_id"] = str(t["_id"])  # ✅ convert ObjectId to string
+            task_list.append(t)
+
+        return jsonify({"tasks": task_list}), 200
 
     except Exception as e:
         import traceback
         print("❌ Error in /tasks:", e)
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
 
 
 @app.route("/tasks/add", methods=["POST"])
