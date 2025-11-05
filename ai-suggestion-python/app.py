@@ -47,12 +47,15 @@ def get_tasks():
     try:
         task_list = []
         for t in db.tasks.find():
-            t["_id"] = str(t["_id"])
+            t["_id"] = str(t["_id"])  # Convert ObjectId to string
             task_list.append(t)
         return jsonify({"tasks": task_list}), 200
     except Exception as e:
+        import traceback
         print("❌ Error in /tasks:", e)
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/tasks/add", methods=["POST"])
 def add_task():
