@@ -8,7 +8,7 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
 # -------------------- DATABASE SETUP --------------------
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://anuragmishra20006_db_user:anurag730@anurag.jboglen.mongodb.net/?appName=anurag")
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://anuragmishra20006_db_user:anurag9311@anurag.jboglen.mongodb.net/?appName=anurag")
 
 try:
     client = MongoClient(MONGO_URI)
