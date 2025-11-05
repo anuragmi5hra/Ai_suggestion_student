@@ -69,7 +69,7 @@
       if (res.message === "Login successful") {
         localStorage.setItem("username", res.name);
         alert("Welcome back, " + res.name + "!");
-        location.href = "dashboard.html";
+        location.href = "/dashboard";
       } else {
         alert(res.error || "Invalid credentials");
       }
@@ -89,7 +89,7 @@
       if (res.message === "Signup successful") {
         localStorage.setItem("username", name);
         alert("Signup successful! Welcome, " + name + "!");
-        location.href = "dashboard.html";
+        location.href = "/dashboard";
       } else {
         alert(res.error || "Signup failed");
       }
