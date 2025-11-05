@@ -47,16 +47,25 @@ def get_tasks():
     try:
         task_list = []
         for t in db.tasks.find():
-            t["_id"] = str(t["_id"])  # Convert ObjectId to string
+            # Convert ObjectId to string safely
+            t["_id"] = str(t.get("_id"))
+            # Optional: make sure no other special BSON types remain
+            t["title"] = t.get("title", "")
+            t["topic"] = t.get("topic", "")
+            t["deadline"] = t.get("deadline", "")
+            t["progress"] = t.get("progress", 0)
+            t["done"] = t.get("done", False)
             task_list.append(t)
+
+        print("✅ /tasks returning", len(task_list), "tasks")
         return jsonify({"tasks": task_list}), 200
+
     except Exception as e:
         import traceback
         print("❌ Error in /tasks:", e)
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
-
+        
 @app.route("/tasks/add", methods=["POST"])
 def add_task():
     try:
