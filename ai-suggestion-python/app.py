@@ -119,13 +119,47 @@ def mark_done(task_id):
     return jsonify({"success": True, "message": "Task marked as done"}), 200
 
 # -------------------- AI SUGGESTION --------------------
+from datetime import datetime
+
 @app.route("/suggest", methods=["POST"])
 def suggest():
-    data = request.get_json()
-    topic = data.get("topic")
-    deadline = data.get("deadline")
-    suggestion = f"For your topic '{topic}', try revising key notes for 30 minutes daily before {deadline}."
-    return jsonify({"suggestion": suggestion}), 200
+    try:
+        data = request.get_json()
+        topic = data.get("topic")
+        deadline = data.get("deadline")
+
+        if not topic or not deadline:
+            return jsonify({"error": "Topic and deadline are required"}), 400
+
+        # Convert string to date
+        deadline_date = datetime.strptime(deadline, "%Y-%m-%d").date()
+        today = datetime.now().date()
+        days_left = (deadline_date - today).days
+
+        if days_left <= 0:
+            suggestion = f"The deadline for '{topic}' has already passed or is today. Try doing a quick revision session now!"
+        else:
+            # Estimate total hours needed (you can tune this logic)
+            total_hours_needed = 8  # Default: 8 total hours per topic
+            hours_per_day = round(total_hours_needed / days_left, 1)
+
+            # Convert small hours into readable minutes
+            if hours_per_day < 1:
+                hours_text = f"about {int(hours_per_day * 60)} minutes"
+            else:
+                hours_text = f"{hours_per_day} hours"
+
+            suggestion = (
+                f"For your topic '{topic}', you have {days_left} days left until {deadline}. "
+                f"To stay on track, try studying {hours_text} daily."
+            )
+
+        return jsonify({"suggestion": suggestion}), 200
+
+    except Exception as e:
+        print("❌ Error in /suggest:", e)
+        return jsonify({"error": str(e)}), 500
+
 
 # -------------------- AUTH --------------------
 @app.route("/signup", methods=["POST"])
