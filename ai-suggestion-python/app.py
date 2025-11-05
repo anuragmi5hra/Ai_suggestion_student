@@ -104,20 +104,37 @@ def delete_task(task_id):
 
 @app.route("/tasks/<task_id>/progress", methods=["PATCH"])
 def update_progress(task_id):
-    task = db.tasks.find_one({"_id": ObjectId(task_id)})
-    if not task:
-        return jsonify({"success": False, "message": "Task not found"}), 404
+    try:
+        result = db.tasks.update_one(
+            {"_id": ObjectId(task_id)},
+            {"$inc": {"progress": 10}}
+        )
+        if result.modified_count == 1:
+            return jsonify({"success": True, "message": "Progress updated"}), 200
+        else:
+            return jsonify({"success": False, "message": "Task not found"}), 404
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
 
-    new_progress = min(task.get("progress", 0) + 10, 100)
-    db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": {"progress": new_progress}})
-    return jsonify({"success": True, "message": "Progress updated"}), 200
 
 @app.route("/tasks/<task_id>/done", methods=["PATCH"])
 def mark_done(task_id):
-    result = db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": {"done": True, "progress": 100}})
-    if result.matched_count == 0:
-        return jsonify({"success": False, "message": "Task not found"}), 404
-    return jsonify({"success": True, "message": "Task marked as done"}), 200
+    try:
+        result = db.tasks.update_one(
+            {"_id": ObjectId(task_id)},
+            {"$set": {"progress": 100}}
+        )
+        if result.modified_count == 1:
+            return jsonify({"success": True, "message": "Task marked as done"}), 200
+        else:
+            return jsonify({"success": False, "message": "Task not found"}), 404
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 # -------------------- AI SUGGESTION --------------------
 from datetime import datetime

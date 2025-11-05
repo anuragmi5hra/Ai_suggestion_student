@@ -24,26 +24,82 @@
 <script src="{{ url_for('static', filename='js/config.js') }}"></script>
 <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
   <script>
+  const token = localStorage.getItem('token') || '';
+
+  // Global functions to make them accessible to inline onclick attributes
   window.updateProgress = async function (id) {
-    const token = localStorage.getItem('token') || '';
-    const res = await fetch(API_BASE + '/tasks/' + id + '/progress', {
-      method: 'PATCH',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const data = await res.json();
-    if (data.success) loadProgress();
-  }
+    try {
+      const res = await fetch(`${API_BASE}/tasks/${id}/progress`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Progress updated!');
+        loadProgress();
+      } else {
+        alert(data.message || 'Failed to update progress');
+      }
+    } catch (err) {
+      console.error('Error updating progress:', err);
+      alert('⚠️ Error updating progress');
+    }
+  };
 
   window.markDone = async function (id) {
-    const token = localStorage.getItem('token') || '';
-    const res = await fetch(API_BASE + '/tasks/' + id + '/done', {
-      method: 'PATCH',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-    const data = await res.json();
-    if (data.success) loadProgress();
+    try {
+      const res = await fetch(`${API_BASE}/tasks/${id}/done`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('🎉 Task marked as done!');
+        loadProgress();
+      } else {
+        alert(data.message || 'Failed to mark done');
+      }
+    } catch (err) {
+      console.error('Error marking done:', err);
+      alert('⚠️ Error marking done');
+    }
+  };
+
+  async function loadProgress() {
+    try {
+      const res = await fetch(`${API_BASE}/tasks`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      const data = await res.json();
+      const list = document.getElementById('progressList');
+      list.innerHTML = '';
+
+      (data.tasks || []).forEach(t => {
+        // Handle both string _id and Object format {_id: {$oid: "..."}}
+        const id = typeof t._id === 'object' ? t._id.$oid : t._id;
+
+        const div = document.createElement('div');
+        div.className = 'task-item';
+        div.innerHTML = `
+          <strong>${t.title}</strong> — ${t.topic}<br>
+          Deadline: ${new Date(t.deadline).toLocaleDateString()}<br>
+          Progress: ${t.progress || 0}% 
+          <button class="btn-small" onclick="updateProgress('${id}')">+10%</button>
+          <button class="btn-small" onclick="markDone('${id}')">Mark as Done ✅</button>
+        `;
+        list.appendChild(div);
+      });
+    } catch (err) {
+      console.error('Error loading progress:', err);
+    }
   }
+
+  window.addEventListener('load', loadProgress);
 </script>
+
 
 
 <!-- Footer -->
