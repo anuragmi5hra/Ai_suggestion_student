@@ -1,24 +1,24 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
-import os
 from bson import ObjectId
+import os
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
 # -------------------- DATABASE SETUP --------------------
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://anuragmishra20006_db_user:anurag9311@anurag.jboglen.mongodb.net/?appName=anurag")
+MONGO_URI = os.environ.get(
+    "MONGO_URI",
+    "mongodb+srv://anuragmishra20006_db_user:anurag730@anurag.jboglen.mongodb.net/studyplanner?retryWrites=true&w=majority"
+)
 
 try:
     client = MongoClient(MONGO_URI)
     db = client["studyplanner"]
-    users = db["users"]
-    tasks = db["tasks"]
     print("✅ MongoDB connected successfully!")
 except Exception as e:
     print("❌ MongoDB connection failed:", e)
-
 
 # -------------------- FRONTEND ROUTES --------------------
 @app.route("/")
@@ -41,40 +41,41 @@ def suggestions():
 def progress():
     return render_template("progress.html")
 
-
 # -------------------- TASK ROUTES --------------------
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
- try:
-    task_list = []
-    for t in db.tasks.find():
-        t["_id"] = str(t["_id"])  # Convert ObjectId to string
-        task_list.append(t)
-    return jsonify({"tasks": task_list}), 200
+    try:
+        task_list = []
+        for t in db.tasks.find():
+            t["_id"] = str(t["_id"])
+            task_list.append(t)
+        return jsonify({"tasks": task_list}), 200
     except Exception as e:
         print("❌ Error in /tasks:", e)
         return jsonify({"error": str(e)}), 500
 
-
 @app.route("/tasks/add", methods=["POST"])
 def add_task():
-    data = request.get_json()
-    title = data.get("title")
-    subject = data.get("topic")
-    deadline = data.get("deadline")
+    try:
+        data = request.get_json()
+        title = data.get("title")
+        topic = data.get("topic")
+        deadline = data.get("deadline")
 
-    if not all([title, topic, deadline]):
-        return jsonify({"success": False, "message": "All fields required"}), 400
+        if not all([title, topic, deadline]):
+            return jsonify({"success": False, "message": "All fields required"}), 400
 
-    db.tasks.insert_one({
-        "title": title,
-        "topic": subject,
-        "deadline": deadline,
-        "progress": 0,
-        "done": False
-    })
-    return jsonify({"success": True, "message": "Task added successfully"}), 201
-
+        db.tasks.insert_one({
+            "title": title,
+            "topic": topic,
+            "deadline": deadline,
+            "progress": 0,
+            "done": False
+        })
+        return jsonify({"success": True, "message": "Task added successfully"}), 201
+    except Exception as e:
+        print("❌ Error in /tasks/add:", e)
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/tasks/<task_id>", methods=["DELETE"])
 def delete_task(task_id):
@@ -82,7 +83,6 @@ def delete_task(task_id):
     if result.deleted_count == 0:
         return jsonify({"success": False, "message": "Task not found"}), 404
     return jsonify({"success": True, "message": "Task deleted"}), 200
-
 
 @app.route("/tasks/<task_id>/progress", methods=["PATCH"])
 def update_progress(task_id):
@@ -94,7 +94,6 @@ def update_progress(task_id):
     db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": {"progress": new_progress}})
     return jsonify({"success": True, "message": "Progress updated"}), 200
 
-
 @app.route("/tasks/<task_id>/done", methods=["PATCH"])
 def mark_done(task_id):
     result = db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": {"done": True, "progress": 100}})
@@ -102,22 +101,16 @@ def mark_done(task_id):
         return jsonify({"success": False, "message": "Task not found"}), 404
     return jsonify({"success": True, "message": "Task marked as done"}), 200
 
-
-# -------------------- AI SUGGESTION ROUTE --------------------
+# -------------------- AI SUGGESTION --------------------
 @app.route("/suggest", methods=["POST"])
 def suggest():
     data = request.get_json()
-    title = data.get("title")
     topic = data.get("topic")
     deadline = data.get("deadline")
-
-    # Simple logic for suggestion (you can expand this later)
     suggestion = f"For your topic '{topic}', try revising key notes for 30 minutes daily before {deadline}."
-
     return jsonify({"suggestion": suggestion}), 200
 
-
-# -------------------- AUTH ROUTES --------------------
+# -------------------- AUTH --------------------
 @app.route("/signup", methods=["POST"])
 def signup():
     data = request.get_json()
@@ -132,7 +125,6 @@ def signup():
     db.users.insert_one({"name": name, "email": email, "password": password})
     return jsonify({"message": "Signup successful"}), 201
 
-
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -143,7 +135,6 @@ def login():
         return jsonify({"message": "Invalid email or password"}), 401
 
     return jsonify({"message": "Login successful", "name": user["name"]}), 200
-
 
 # -------------------- MAIN --------------------
 if __name__ == "__main__":
