@@ -763,5 +763,20 @@ button[onclick*="markDone"]:hover {
   color: #00c6ff;
   border-bottom: 2px solid #00c6ff;
 }
-
+a {
+    display: inline-block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
 

@@ -36,10 +36,11 @@
    <p class="center" style="margin-top:12px;"><a href="{{ url_for('dashboard') }}">Continue as Guest</a></p>
 
   </div>
+  
+<script src="{{ url_for('static', filename='js/config.js') }}"></script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
   <script>
-    // ✅ Backend Base URL (your Flask Render API)
-    const API_BASE = "https://ai-suggestion-student-3.onrender.com";
 
     // Helper to send JSON requests
     async function postJSON(url, data) {
