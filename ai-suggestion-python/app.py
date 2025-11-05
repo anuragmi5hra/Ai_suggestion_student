@@ -45,6 +45,7 @@ def progress():
 # -------------------- TASK ROUTES --------------------
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
+ try:
     task_list = []
     for t in db.tasks.find():
         t["_id"] = str(t["_id"])  # Convert ObjectId to string
