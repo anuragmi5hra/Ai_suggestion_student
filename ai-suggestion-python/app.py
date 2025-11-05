@@ -8,7 +8,7 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
 # -------------------- DATABASE SETUP --------------------
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://anuragmishra20006_db_user:anurag9311@anurag.jboglen.mongodb.net/?appName=anurag")
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://anuragmishra20006_db_user:anurag730@anurag.jboglen.mongodb.net/?appName=anurag")
 
 try:
     client = MongoClient(MONGO_URI)
@@ -50,13 +50,16 @@ def get_tasks():
         t["_id"] = str(t["_id"])  # Convert ObjectId to string
         task_list.append(t)
     return jsonify({"tasks": task_list}), 200
+    except Exception as e:
+        print("❌ Error in /tasks:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/tasks/add", methods=["POST"])
 def add_task():
     data = request.get_json()
     title = data.get("title")
-    topic = data.get("topic")
+    subject = data.get("topic")
     deadline = data.get("deadline")
 
     if not all([title, topic, deadline]):
@@ -64,7 +67,7 @@ def add_task():
 
     db.tasks.insert_one({
         "title": title,
-        "topic": topic,
+        "topic": subject,
         "deadline": deadline,
         "progress": 0,
         "done": False
