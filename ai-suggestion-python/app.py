@@ -86,10 +86,20 @@ def add_task():
 
 @app.route("/tasks/<task_id>", methods=["DELETE"])
 def delete_task(task_id):
-    result = db.tasks.delete_one({"_id": ObjectId(task_id)})
-    if result.deleted_count == 0:
-        return jsonify({"success": False, "message": "Task not found"}), 404
-    return jsonify({"success": True, "message": "Task deleted"}), 200
+    try:
+        # Safely handle invalid ObjectId
+        if not ObjectId.is_valid(task_id):
+            return jsonify({"success": False, "message": "Invalid task ID"}), 400
+
+        result = db.tasks.delete_one({"_id": ObjectId(task_id)})
+        if result.deleted_count == 0:
+            return jsonify({"success": False, "message": "Task not found"}), 404
+
+        return jsonify({"success": True, "message": "Task deleted"}), 200
+
+    except Exception as e:
+        print("❌ Error deleting task:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/tasks/<task_id>/progress", methods=["PATCH"])
 def update_progress(task_id):
