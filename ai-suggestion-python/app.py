@@ -39,6 +39,26 @@ def suggestions():
 def progress():
     return render_template("progress.html")
 
+    # -------------------- TASK ROUTES --------------------
+@app.route("/tasks", methods=["GET"])
+def get_tasks():
+    tasks = list(db.tasks.find({}, {"_id": 0}))
+    return jsonify(tasks)
+
+@app.route("/tasks/add", methods=["POST"])
+def add_task():
+    data = request.get_json()
+    title = data.get("title")
+    subject = data.get("subject")
+    deadline = data.get("deadline")
+
+    if not all([title, subject, deadline]):
+        return jsonify({"error": "All fields required"}), 400
+
+    db.tasks.insert_one({"title": title, "subject": subject, "deadline": deadline})
+    return jsonify({"message": "Task added successfully"}), 201
+
+
 
 # -------------------- BACKEND ROUTES --------------------
 @app.route("/signup", methods=["POST"])
