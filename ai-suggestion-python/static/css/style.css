@@ -130,9 +130,7 @@ a {
   transition: color var(--transition-base);
 }
 
-a:hover {
-  color: var(--color-secondary-hover);
-}
+
 
 /* ========== NAVIGATION BAR ========== */
 .nav {
@@ -175,9 +173,7 @@ a:hover {
   transition: width var(--transition-base);
 }
 
-.nav a:hover {
-  color: var(--color-primary);
-}
+
 
 .nav a:hover::after {
   width: 100%;
