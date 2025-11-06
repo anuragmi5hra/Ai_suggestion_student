@@ -25,7 +25,7 @@ function navHtml(){
 </div>
 
     <div class="links">
-      <a href="index.html">Home</a>
+      <a href="index.html"></a>
       <a href="#about">About</a>
       <a href="#features">Features</a>
     </div>
