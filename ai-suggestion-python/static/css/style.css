@@ -787,7 +787,7 @@ a:hover {
 
 a:active {
   transform: scale(1.02);
-  background-color: var(--color-secondary);
+  background-color: var(--color-primary-hover);
   box-shadow: var(--shadow-sm);
 }
 
