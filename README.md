@@ -5,11 +5,11 @@
 </h2>
 
 <div align="center">
-  <img alt="Smart Study Planner Demo" src="assets/Images/introduction.png" />
-  <img alt="Smart Study Planner Demo" src="assets/Images/login.png" />
-  <img alt="Smart Study Planner Demo" src="assets/Images/dashboard.png" />
-  <img alt="Smart Study Planner Demo" src="assets/Images/suggetion.png" />
-  <img alt="Smart Study Planner Demo" src="assets/Images/view progress.png" />
+  <img alt="Smart Study Planner Demo" src="assets/images/introduction.png" />
+  <img alt="Smart Study Planner Demo" src="assets/images/login.png" />
+  <img alt="Smart Study Planner Demo" src="assets/images/dashboard.png" />
+  <img alt="Smart Study Planner Demo" src="assets/images/suggestion.png" />
+  <img alt="Smart Study Planner Demo" src="assets/images/view progress.png" />
 </div>
 
 <br/>
